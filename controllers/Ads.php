@@ -39,25 +39,29 @@ class Ads extends CI_Controller {
 
 	public function add()
 	{
-		$this->form_validation->set_rules('title', 'Title', 'trim|required');
+	$this->form_validation->set_rules('title', 'Title', 'trim|required');
 
-		if ( $this->form_validation->run() == true){
+	if ( $this->form_validation->run() == true){
 
 			// $this->model->insert(); //uncomment to use query builder
-		$title               = $this->input->post("title");
+	$title               = $this->input->post("title");
         $image               = $this->input->post("image");
-        $status              = $this->input->post("status");
+        $Status              = $this->input->post("status");
         $img    			 = $this->do_upload_image('image', './assets/uploads/ads/');
-
+        
+        if ($img['status'] != "error") {
           $client 				= new Adsmodel;
 		  $client->title  		= $title;
-		  $client->status 		= $status;
+		  $client->status 		= $Status;
 		  $client->image  		= 'assets/uploads/ads/'.$img['message'];
 		  $client->created_at  	= date('Y-m-d H:i:s');
 		  $client->created_by	= 1;//replace with id session login
 
-
 		  $result = $client->save();
+        }else{
+        	echo $img['message']['error']." <font color='red'> Jika anda menggunakan linux mohon change permission 777 , chmod -R 777 uploads pada directory assets/, jika folder <b>uploads</b> tidak ada pada assets, anda bisa membuat folder sendiri </font>";
+        	die;
+        }
 
             $this->session->set_flashdata('success_message', "Add Ads success");
             redirect("ads/index", 'refresh');
